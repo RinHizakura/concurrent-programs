@@ -2,18 +2,10 @@
 #include <stddef.h>
 
 #include "mcslock.h"
-
-#define LIKELY(x) __builtin_expect(!!(x), 1)
+#include "macros.h"
 
 enum { MCS_PROCEED = 0, MCS_WAIT = 1 };
 
-#if defined(__i386__) || defined(__x86_64__)
-#define spin_wait() __builtin_ia32_pause()
-#elif defined(__aarch64__)
-#define spin_wait() __asm__ __volatile__("isb\n")
-#else
-#define spin_wait() ((void) 0)
-#endif
 
 static inline void wait_until_equal_u8(_Atomic uint8_t *loc,
                                        uint8_t val,
